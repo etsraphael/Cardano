@@ -1,0 +1,35 @@
+cardano-cli query protocol-parameters --mainnet --out-file protocol.json
+
+cardano-cli query utxo --address $(cat payment.addr) --mainnet
+
+cardano-cli transaction calculate-min-fee --tx-body-file tx.draft --tx-in-count 1 --tx-out-count 2 --witness-count 1 --byron-witness-count 0 --mainnet --protocol-params-file protocol.json
+
+expr 3000000 - 1000000 - 177117
+
+cardano-cli transaction build-raw \
+    --tx-in eb7296ae459d463f57a64dad4f4ffefd2b80001c76cbe59159d5f9d761c7493b#0 \
+    --tx-out $(cat payment2.addr)+1000000 \
+    --tx-out $(cat payment.addr)+1822883 \
+    --invalid-hereafter 72799840 \
+    --fee 177117 \
+    --out-file tx.draft
+
+=> 
+
+cardano-cli transaction build-raw --tx-in eb7296ae459d463f57a64dad4f4ffefd2b80001c76cbe59159d5f9d761c7493b#0 --tx-out $(cat payment2.addr)+1000000 --tx-out $(cat payment.addr)+1822883 --invalid-hereafter 72799840 --fee 177117 --out-file tx.draft
+
+cardano-cli transaction build-raw \
+    --tx-in eb7296ae459d463f57a64dad4f4ffefd2b80001c76cbe59159d5f9d761c7493b#0 \
+    --tx-out $(cat payment2.addr)+1000000 \
+    --tx-out $(cat payment.addr)+1822883 \
+    --invalid-hereafter 72799840 \
+    --fee 177117 \
+    --out-file tx.raw
+
+=> 
+
+cardano-cli transaction build-raw --tx-in eb7296ae459d463f57a64dad4f4ffefd2b80001c76cbe59159d5f9d761c7493b#0 --tx-out $(cat payment2.addr)+1000000 --tx-out $(cat payment.addr)+1822883 --invalid-hereafter 72799840 --fee 177117 --out-file tx.raw
+
+cardano-cli transaction sign --tx-body-file tx.raw --signing-key-file payment.skey --mainnet --out-file tx.signed
+
+cardano-cli transaction submit --tx-file tx.signed --mainnet
